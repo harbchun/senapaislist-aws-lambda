@@ -24,23 +24,40 @@ def main(event, context):
 
     ##### LAST SEASON #####
     # get the objects (files)
-    data_objects = data_bucket.objects.filter(Prefix=str(LAST_YEAR)+'/'+LAST_SEASON)
+    last_season_data_objects = data_bucket.objects.filter(Prefix=str(LAST_YEAR)+'/'+LAST_SEASON)
     
     # TODO: use this instead of the one below
     # list of japanese titles currently in the data bucket
     # existing_tid_list = helper.get_existing_tids(data_objects)
 
     # get dictionary with k,v pairs of existing (in the bucket) anime tid, malid 
-    existing_tid_malid_dict = helper.get_existing_tid_malid_dict(data_objects)
+    last_season_existing_dict = helper.get_existing_tid_malid_dict(last_season_data_objects)
 
     # get data
-    last_season_broadcast_times = syoboi.get_season_broadcast_times(existing_tid_malid_dict)
+    last_season_broadcast_times = syoboi.get_season_broadcast_times(last_season_existing_dict)
     last_season_json_object = json.dumps(last_season_broadcast_times)
 
     # add the data
     last_season_object = s3.Object(AWS_BROADCAST_TIMES_BUCKET_NAME, str(LAST_YEAR)+'/'+LAST_SEASON+'.json')
     last_season_object.put(Body=last_season_json_object)
     ##### LAST SEASON #####
+
+
+    ##### CURRENT SEASON #####
+    # get the objects (files)
+    curr_season_data_objects = data_bucket.objects.filter(Prefix=str(YEAR)+'/'+SEASON)
+
+    # get dictionary with k,v pairs of existing (in the bucket) anime tid, malid 
+    curr_season_existing_dict = helper.get_existing_tid_malid_dict(curr_season_data_objects)
+
+    # get data
+    curr_season_broadcast_times = syoboi.get_season_broadcast_times(curr_season_existing_dict)
+    curr_season_json_object = json.dumps(curr_season_broadcast_times)
+
+    # add the data
+    curr_season_object = s3.Object(AWS_BROADCAST_TIMES_BUCKET_NAME, str(YEAR)+'/'+SEASON+'.json')
+    curr_season_object.put(Body=curr_season_json_object)
+    ##### CURRENT SEASON #####
 
     return 'Success!'
 
