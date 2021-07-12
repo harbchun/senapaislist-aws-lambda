@@ -2,7 +2,7 @@ import os
 import json
 import boto3 
 
-from utils import times
+from utils import times, syoboi, helper
 
 # AWS variables
 AWS_BUCKET_REGION = os.environ.get('AWS_BUCKET_REGION')
@@ -21,9 +21,28 @@ def main(event, context):
     s3 = boto3.resource('s3', region_name=AWS_BUCKET_REGION)
     # get the bucket objects
     data_bucket = s3.Bucket(AWS_DATA_BUCKET_NAME)
-    broadcast_times_bucket = s3.Bucket(AWS_BROADCAST_TIMES_BUCKET_NAME)
 
-    return str(YEAR) + SEASON + str(LAST_YEAR) + LAST_SEASON 
+    ##### LAST SEASON #####
+    # get the objects (files)
+    data_objects = data_bucket.objects.filter(Prefix=str(LAST_YEAR)+'/'+LAST_SEASON)
+    
+    # TODO: use this instead of the one below
+    # list of japanese titles currently in the data bucket
+    # existing_tid_list = helper.get_existing_tids(data_objects)
+
+    # get dictionary with k,v pairs of existing (in the bucket) anime tid, malid 
+    existing_tid_malid_dict = helper.get_existing_tid_malid_dict(data_objects)
+
+    # get data
+    last_season_broadcast_times = syoboi.get_season_broadcast_times(existing_tid_malid_dict)
+    last_season_json_object = json.dumps(last_season_broadcast_times)
+
+    # add the data
+    last_season_object = s3.Object(AWS_BROADCAST_TIMES_BUCKET_NAME, str(LAST_YEAR)+'/'+LAST_SEASON+'.json')
+    last_season_object.put(Body=last_season_json_object)
+    ##### LAST SEASON #####
+
+    return 'Success!'
 
 if __name__ == "__main__":   
     main('', '')
