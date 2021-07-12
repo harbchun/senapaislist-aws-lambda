@@ -1,0 +1,13 @@
+.env
+
+# aws
+output.txt
+
+# package
+package
+**.zip
+
+# python
+__pycache__
+tester.py
+ 
