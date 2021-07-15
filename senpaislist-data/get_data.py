@@ -1,7 +1,6 @@
 import os
 import json
 import uuid
-import urllib3
 import boto3 
 import collections
 
