@@ -11,12 +11,12 @@ def get_anime_ids(year, season):
 
     anime_list_url = 'https://api.jikan.moe/v3/season/' + str(year) + '/' + season
     anime_list_response = requests.get(anime_list_url)
-    anime_list_data = anime_list_response.json()
+    anime_list_dict = anime_list_response.json()
 
-    if not anime_list_data['anime']: return ''
+    if not anime_list_dict['anime']: return ''
 
     anime_id_list = []
-    for anime in anime_list_data['anime']:
+    for anime in anime_list_dict['anime']:
         genres = tuple([genre['name'] for genre in anime['genres']])
         if any(genre in genres for genre in tfg):
             continue
@@ -26,7 +26,9 @@ def get_anime_ids(year, season):
         
 def retrieve_anime_data(anime_id):
     time.sleep(4)
-    http = urllib3.PoolManager()
-    animeResponse = http.request("GET", "https://api.jikan.moe/v3/anime/" + str(anime_id))
 
-    return json.loads(animeResponse.data)
+    anime_data_url = 'https://api.jikan.moe/v3/anime/' + str(anime_id)
+    anime_data_response = requests.get(anime_data_url)
+    anime_data_dict = anime_data_response.json()
+
+    return anime_data_dict
