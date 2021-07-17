@@ -67,6 +67,7 @@ aws lambda update-function-configuration --function-name $(lambda-function-name)
 
 ## Premade Commands for functions
 **senapaislist-broadcast-times:**
+
 update
 ```bash
 # update packages
